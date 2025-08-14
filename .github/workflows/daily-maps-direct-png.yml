@@ -1,9 +1,8 @@
-\
 name: "Daily ECMWF Maps (direct PNG)"
 
 on:
   schedule:
-    - cron: "0 7 * * *" # ogni giorno alle 07:00 UTC
+    - cron: "0 7 * * *"
   workflow_dispatch:
 
 jobs:
