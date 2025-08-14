@@ -1,5 +1,5 @@
 \
-name: Daily ECMWF Maps (direct PNG)"
+name: "Daily ECMWF Maps (direct PNG)"
 
 on:
   schedule:
