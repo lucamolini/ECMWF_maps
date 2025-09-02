@@ -35,7 +35,7 @@ jobs:
           secure: true
           to: ${{ secrets.RECIPIENTS }}
           from: ${{ secrets.SMTP_FROM }}
-          subject: "Daily ECMWF Maps – $(date +'%Y-%m-%d')"
+          subject: "Daily ECMWF Maps $(date +'%d-%m-%Y')"
           body: "In allegato le mappe ECMWF per i prossimi 3 giorni."
           attachments: |
             maps/map_day1.png
