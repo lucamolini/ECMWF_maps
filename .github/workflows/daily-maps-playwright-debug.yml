@@ -40,7 +40,7 @@ jobs:
           secure: true
           to: ${{ secrets.RECIPIENTS }}
           from: ${{ secrets.SMTP_FROM }}
-          subject: "Daily ECMWF Maps ${{ steps.today.outputs.today }}"
+          subject: "Daily ECMWF Maps - ${{ steps.today.outputs.today }}"
           body: |
             In allegato le mappe ECMWF (EFI TP 99° quantile).
             Se qualcosa fallisce, scarica l'artifact 'ecmwf-maps-${{ github.run_id }}' per i dettagli (HTML e PNG).
