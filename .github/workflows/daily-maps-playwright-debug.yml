@@ -29,18 +29,21 @@ jobs:
         id: today
         run: echo "today=$(TZ=Europe/Rome date +'%d-%m-%Y')" >> $GITHUB_OUTPUT
 
-      - name: Send email with attachments
+      - name: Send email (if at least one map exists)
+        if: ${{ hashFiles('maps/*.png') != '' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
           server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASS }}
           secure: true
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "Daily ECMWF Maps ${{ steps.today.outputs.today }}"
-          to: ${{ secrets.MAIL_TO }}
-          from: CIMA Bot <${{ secrets.MAIL_FROM }}>
-          body: "In allegato le mappe EFI TP."
+          to: ${{ secrets.RECIPIENTS }}
+          from: ${{ secrets.SMTP_FROM }}
+          subject: "Daily ECMWF Maps $(date +'%d-%m-%Y')"
+          body: |
+            In allegato le mappe ECMWF (EFI TP 99° quantile).
+            Se qualcosa fallisce, scarica l'artifact 'ecmwf-maps-${{ github.run_id }}' per i dettagli (HTML e PNG).
           attachments: |
             maps/map_day1.png
             maps/map_day2.png
