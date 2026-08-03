@@ -1,36 +1,62 @@
-name: Daily ECMWF Maps (Playwright Debug)
+name: Daily ECMWF Links
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 8 * * *"  # 05:00 UTC (~06/07:00 Europe/Rome depending on DST)
+    # GitHub Actions usa UTC. Le due esecuzioni coprono ora legale e ora solare.
+    - cron: "0 9,10 * * *"
 
 jobs:
-  build-and-send:
+  send-links:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      - name: Check whether it is 11:00 in Rome
+        id: timing
+        shell: bash
+        run: |
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            echo "send=true" >> "$GITHUB_OUTPUT"
+          else
+            rome_offset="$(TZ=Europe/Rome date +%z)"
+            utc_hour="$(date -u +%H)"
+
+            if [[ ( "$rome_offset" == "+0200" && "$utc_hour" == "09" ) || \
+                  ( "$rome_offset" == "+0100" && "$utc_hour" == "10" ) ]]; then
+              echo "send=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "send=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Checkout repository
+        if: steps.timing.outputs.send == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Python
+        if: steps.timing.outputs.send == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install Playwright (Chromium) deps
+      - name: Generate ECMWF links
+        if: steps.timing.outputs.send == 'true'
+        run: python download_maps_playwright_debug.py
+
+      - name: Prepare email data
+        if: steps.timing.outputs.send == 'true'
+        id: email
+        shell: bash
         run: |
-          pip install playwright
-          python -m playwright install --with-deps chromium
+          echo "date=$(TZ=Europe/Rome date +'%d-%m-%Y')" >> "$GITHUB_OUTPUT"
+          {
+            echo "body<<EOF"
+            cat ecmwf_links.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Run map downloader (Playwright debug)
-        run: |
-          python download_maps_playwright_debug.py
-
-      - name: Compute today date (Europe/Rome)
-        id: today
-        run: echo "today=$(TZ=Europe/Rome date +'%d-%m-%Y')" >> $GITHUB_OUTPUT
-
-      - name: Send email (if at least one map exists)
-        if: ${{ hashFiles('maps/*.png') != '' }}
+      - name: Send email
+        if: steps.timing.outputs.send == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
@@ -38,13 +64,7 @@ jobs:
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASS }}
           secure: true
-          to: ${{ secrets.RECIPIENTS }}
+          to: luca.molini@cimafoundation.org
           from: ${{ secrets.SMTP_FROM }}
-          subject: "Daily ECMWF Maps - ${{ steps.today.outputs.today }}"
-          body: |
-            In allegato le mappe ECMWF (EFI TP 99° quantile).
-            Se qualcosa fallisce, scarica l'artifact 'ecmwf-maps-${{ github.run_id }}' per i dettagli (HTML e PNG).
-          attachments: |
-            maps/map_day1.png
-            maps/map_day2.png
-            maps/map_day3.png
+          subject: "ECMWF EFI TP links - ${{ steps.email.outputs.date }}"
+          body: ${{ steps.email.outputs.body }}
