@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
   schedule:
     # GitHub Actions usa UTC. Le due esecuzioni coprono ora legale e ora solare.
-    - cron: "0 9,10 * * *"
+    - cron: "0 10,11 * * *"
 
 jobs:
   send-links:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check whether it is 11:00 in Rome
+      - name: Check whether it is 12:00 in Rome
         id: timing
         shell: bash
         run: |
