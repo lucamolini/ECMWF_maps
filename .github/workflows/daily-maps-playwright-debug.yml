@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # GitHub Actions usa UTC. Le due esecuzioni coprono ora legale e ora solare.
-    - cron: "0 10,11 * * *"
+    - cron: "0 11 * * *"
 
 jobs:
   send-links:
