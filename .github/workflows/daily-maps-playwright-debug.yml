@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASS }}
           secure: true
-          to: luca.molini@cimfaoundation.org
+          to: luca.molini@cimafoundation.org
           from: ${{ secrets.SMTP_FROM }}
           subject: "ECMWF EFI TP links - ${{ steps.email.outputs.date }}"
           body: ${{ steps.email.outputs.body }}
