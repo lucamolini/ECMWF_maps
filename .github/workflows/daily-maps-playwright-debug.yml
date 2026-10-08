@@ -1,50 +1,29 @@
+
 name: Daily ECMWF Links
 
 on:
   workflow_dispatch:
   schedule:
-    # GitHub Actions usa UTC. Le due esecuzioni coprono ora legale e ora solare.
-    - cron: "0 11 * * *"
+    - cron: "17 11 * * *"
+      timezone: "Europe/Rome"
 
 jobs:
   send-links:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check whether it is 12:00 in Rome
-        id: timing
-        shell: bash
-        run: |
-          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
-            echo "send=true" >> "$GITHUB_OUTPUT"
-          else
-            rome_offset="$(TZ=Europe/Rome date +%z)"
-            utc_hour="$(date -u +%H)"
-
-            if [[ ( "$rome_offset" == "+0200" && "$utc_hour" == "09" ) || \
-                  ( "$rome_offset" == "+0100" && "$utc_hour" == "10" ) ]]; then
-              echo "send=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "send=false" >> "$GITHUB_OUTPUT"
-            fi
-          fi
-
       - name: Checkout repository
-        if: steps.timing.outputs.send == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Python
-        if: steps.timing.outputs.send == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Generate ECMWF links
-        if: steps.timing.outputs.send == 'true'
         run: python download_maps_playwright_debug.py
 
       - name: Prepare email data
-        if: steps.timing.outputs.send == 'true'
         id: email
         shell: bash
         run: |
@@ -56,7 +35,6 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Send email
-        if: steps.timing.outputs.send == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
@@ -64,7 +42,7 @@ jobs:
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASS }}
           secure: true
-          to: luca.molini@gmail.com
+          to: luca.molini@cimfaoundation.org
           from: ${{ secrets.SMTP_FROM }}
           subject: "ECMWF EFI TP links - ${{ steps.email.outputs.date }}"
           body: ${{ steps.email.outputs.body }}
