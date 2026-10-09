@@ -4,7 +4,7 @@ name: Daily ECMWF Links
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 11 * * *"
+    - cron: "17 06 * * *"
       timezone: "Europe/Rome"
 
 jobs:
