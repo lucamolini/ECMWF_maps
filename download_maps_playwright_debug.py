@@ -5,19 +5,26 @@ BASE_URL = (
     "https://charts.ecmwf.int/products/efi2web_tp"
     "?area=Europe&base_time={base}&day={day}&quantile=99"
 )
-OUTPUT_FILE = Path("ecmwf_links.txt")
 
 
-def main() -> None:
-    """Genera i link ECMWF per i giorni 1, 2 e 3."""
+ADDITIONAL_LINKS = [
+    "https://www.stormdom.com/",
+    "https://meteoalarm.org/en/live/?t=day0",
+    "https://meteoalarm.org/en/live/?t=day1",
+    "https://www.estofex.org/",
+
+
+def build_email_body() -> str:
+    """Prepara il corpo della mail, senza scrivere file."""
     base_time = datetime.now(timezone.utc).strftime("%Y%m%d0000")
-    links = [BASE_URL.format(base=base_time, day=day) for day in (1, 2, 3)]
-
-    OUTPUT_FILE.write_text("\n".join(links) + "\n", encoding="utf-8")
-
-    print(f"base_time={base_time}")
-    print(f"Creato {OUTPUT_FILE} con i tre link ECMWF:")
-    print("\n".join(links))
+    ecmwf_links = [BASE_URL.format(base=base_time, day=day) for day in (1)]
+    return (
+        "Link ECMWF (giorno 1):\n"
+        + "\n".join(ecmwf_links)
+        + "\n\nAltri link di monitoraggio meteo:\n"
+        + "\n".join(ADDITIONAL_LINKS)
+        + "\n"
+    )
 
 
 if __name__ == "__main__":
