@@ -5,7 +5,6 @@ BASE_URL = (
     "https://charts.ecmwf.int/products/efi2web_tp"
     "?area=Europe&base_time={base}&day={day}&quantile=99"
 )
-
 OUTPUT_FILE = Path("ecmwf_links.txt")
 
 ADDITIONAL_LINKS = [
@@ -20,7 +19,7 @@ def main() -> None:
     base_time = datetime.now(timezone.utc).strftime("%Y%m%d0000")
     links = [BASE_URL.format(base=base_time, day=day) for day in (1, 2, 3)]
 
- OUTPUT_FILE.write_text("\n".join(links) + "\n", encoding="utf-8")
+    OUTPUT_FILE.write_text("\n".join(links) + "\n", encoding="utf-8")
     
     return (
         "Link ECMWF (giorno 1):\n"
