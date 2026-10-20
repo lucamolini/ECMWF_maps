@@ -6,6 +6,7 @@ BASE_URL = (
     "?area=Europe&base_time={base}&day={day}&quantile=99"
 )
 
+OUTPUT_FILE = Path("ecmwf_links.txt")
 
 ADDITIONAL_LINKS = [
     "https://www.stormdom.com/",
@@ -18,6 +19,9 @@ def main() -> None:
     """Prepara il corpo della mail, senza scrivere file."""
     base_time = datetime.now(timezone.utc).strftime("%Y%m%d0000")
     links = [BASE_URL.format(base=base_time, day=day) for day in (1, 2, 3)]
+
+ OUTPUT_FILE.write_text("\n".join(links) + "\n", encoding="utf-8")
+    
     return (
         "Link ECMWF (giorno 1):\n"
         + "\n".join(links)
