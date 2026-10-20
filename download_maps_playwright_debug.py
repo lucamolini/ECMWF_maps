@@ -14,7 +14,7 @@ ADDITIONAL_LINKS = [
     "https://www.estofex.org/",
 ]
 
-def build_email_body() -> str:
+def main() -> None:
     """Prepara il corpo della mail, senza scrivere file."""
     base_time = datetime.now(timezone.utc).strftime("%Y%m%d0000")
     ecmwf_links = [BASE_URL.format(base=base_time, day=day) for day in (1)]
