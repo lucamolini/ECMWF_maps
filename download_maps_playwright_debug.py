@@ -17,10 +17,10 @@ ADDITIONAL_LINKS = [
 def main() -> None:
     """Prepara il corpo della mail, senza scrivere file."""
     base_time = datetime.now(timezone.utc).strftime("%Y%m%d0000")
-    ecmwf_links = [BASE_URL.format(base=base_time, day=day) for day in (1)]
+    links = [BASE_URL.format(base=base_time, day=day) for day in (1, 2, 3)]
     return (
         "Link ECMWF (giorno 1):\n"
-        + "\n".join(ecmwf_links)
+        + "\n".join(links)
         + "\n\nAltri link di monitoraggio meteo:\n"
         + "\n".join(ADDITIONAL_LINKS)
         + "\n"
