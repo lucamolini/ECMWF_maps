@@ -12,7 +12,7 @@ ADDITIONAL_LINKS = [
     "https://meteoalarm.org/en/live/?t=day0",
     "https://meteoalarm.org/en/live/?t=day1",
     "https://www.estofex.org/",
-
+]
 
 def build_email_body() -> str:
     """Prepara il corpo della mail, senza scrivere file."""
