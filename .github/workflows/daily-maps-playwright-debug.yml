@@ -1,4 +1,3 @@
-
 name: Daily ECMWF Links
 
 on:
@@ -20,9 +19,6 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Generate ECMWF links
-        run: python download_maps_playwright_debug.py
-
       - name: Prepare email data
         id: email
         shell: bash
@@ -30,7 +26,7 @@ jobs:
           echo "date=$(TZ=Europe/Rome date +'%d-%m-%Y')" >> "$GITHUB_OUTPUT"
           {
             echo "body<<EOF"
-            cat ecmwf_links.txt
+            python download_maps_playwright_debug.py
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
