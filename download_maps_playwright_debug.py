@@ -6,9 +6,11 @@ BASE_URL = (
 )
 
 ADDITIONAL_LINKS = (
+    " ",
     "https://www.stormdom.com/",
+    " ",
     "https://meteoalarm.org/en/live/?t=day0&h=3,10,12,13",
-    "https://meteoalarm.org/en/live/?t=day1&h=3,10,12,13",
+    " ",
     "https://www.estofex.org/",
 )
 
